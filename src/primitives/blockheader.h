@@ -1,5 +1,5 @@
-#ifndef VIACOIN_BLOCKHEADER_H
-#define VIACOIN_BLOCKHEADER_H
+#ifndef SEXCOIN_BLOCKHEADER_H
+#define SEXCOIN_BLOCKHEADER_H
 
 #include "auxpow/consensus.h"
 #include "auxpow/serialize.h"
@@ -82,4 +82,4 @@ public:
 };
 
 
-#endif //VIACOIN_BLOCKHEADER_H
+#endif //SEXCOIN_BLOCKHEADER_H

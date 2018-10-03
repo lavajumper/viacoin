@@ -9,13 +9,17 @@
  * network protocol versioning
  */
 
+/**
+ * Sexcoin network protocol 60703 is equvilent to Litecoin 70003. 
+ * We are finally fixing that so we can be consistent with Litecoin conventions
+ */
 static const int PROTOCOL_VERSION = 70015;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
 
 //! In this version, 'getheaders' was introduced.
-static const int GETHEADERS_VERSION = 31800;
+static const int GETHEADERS_VERSION = 60703; //sexcoin
 
 //! disconnect from peers older than this proto version
 static const int MIN_PEER_PROTO_VERSION = GETHEADERS_VERSION;
@@ -27,7 +31,10 @@ static const int CADDR_TIME_VERSION = 31402;
 //! BIP 0031, pong message, is enabled for all versions AFTER this one
 static const int BIP0031_VERSION = 60000;
 
-//! "filter*" commands are disabled without NODE_BLOOM after and including this version
+// Sexcoin: The following have not ever been in Sexcoin. We are keeping the defines to hopefully make future updates easier
+//          Any tests performed against these version will all be below these thresholds except for this version.
+
+//! "filter*" commands are disabled without NODE_BLOOM after and including this version 
 static const int NO_BLOOM_VERSION = 70011;
 
 //! "sendheaders" command and announcing blocks with headers starts with this version

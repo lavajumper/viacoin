@@ -1479,7 +1479,7 @@ void ThreadMapPort()
             }
         }
 
-        std::string strDesc = "Viacoin " + FormatFullVersion();
+        std::string strDesc = "Sexcoin " + FormatFullVersion();
 
         try {
             while (true) {

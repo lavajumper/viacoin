@@ -46,11 +46,15 @@
 #include <sstream>
 
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/thread.hpp>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+
 #if defined(NDEBUG)
-# error "Viacoin cannot be compiled without assertions."
+# error "Sexcoin cannot be compiled without assertions."
 #endif
 
 /**
@@ -93,7 +97,7 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "Viacoin Signed Message:\n";
+const std::string strMessageMagic = "Sexcoin Signed Message:\n";
 
 // Internal stuff
 namespace {
@@ -1038,6 +1042,13 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
     return true;
 }
 
+int static generateMTRandom(int s, int range)
+{
+    boost::mt19937 gen(s);
+    boost::uniform_int<> dist(1,range);
+    return dist(gen);
+}
+
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
     // In -regtest mode use Bitcoin schedule
@@ -1053,40 +1064,33 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
         return nSubsidy;
     }
 
-    // Viacoin schedule
-    CAmount nSubsidy = 0;
+    // Sexcoin schedule
+    CAmount nSubsidy = 100 * COIN;
 
-    // different zero block period for testnet and mainnet
-    // mainnet not fixed until final release
-    int zeroRewardHeight = consensusParams.fPowAllowMinDifficultyBlocks ? 2001 : 10001;
-
-    int rampHeight = 43200 + zeroRewardHeight; // 4 periods of 10800
-
-    if (nHeight == 0) {
-        // no reward for genesis block
-        nSubsidy = 0;
-    } else if (nHeight == 1) {
-        // first distribution
-        nSubsidy = 10000000 * COIN;
-    } else if (nHeight <= zeroRewardHeight) {
-        // no block reward to allow difficulty to scale up and prevent instamining
-        nSubsidy = 0;
-    } else if (nHeight <= (zeroRewardHeight + 10800)) {
-        // first 10800 block after zero reward period is 10 coins per block
-        nSubsidy = 10 * COIN;
-    } else if (nHeight <= rampHeight) {
-        // every 10800 blocks reduce nSubsidy from 8 to 6
-        nSubsidy = (8 - int((nHeight-zeroRewardHeight-1) / 10800)) * COIN;
-    } else if (nHeight <= 1971000) {
-        nSubsidy = 5 * COIN;
-    } else { // (nHeight > 1971000)
-        int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
-        // Force block reward to zero when right shift is undefined.
-        if (halvings <= 64) {
-            nSubsidy = 20 * COIN;
-            nSubsidy >>= halvings;
-        }
+    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
+    
+    if (halvings >= 64)
+            return 0;
+    
+    // Premine bounties
+    if(nHeight < 3) { // Block 1 and 2 get 1 Million SXC each
+        nSubsidy = 1000000 * COIN;
+    } else if(nHeight < 5001) { // Block 3 through 5000 get 200 SXC
+        nSubsidy = 200 * COIN;
     }
+    
+        // Superblock random reward
+    // A psuedo-random pattern is used to select "super blocks" which
+    // getet either 50x or 5x normal subsidy
+    int rand = generateMTRandom(nHeight, 100000);
+
+    if(rand > 99990) {
+        nSubsidy *= 50;
+    } else if (rand < 2001) {
+        nSubsidy *= 5 ;
+    }
+    
+    nSubsidy >>=halvings;
 
     return nSubsidy;
 }
@@ -2867,10 +2871,13 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
-    if (!CheckBlockHeader(block, state, consensusParams, fCheckPOW))
+    if (!CheckBlockHeader(block, state, consensusParams, fCheckPOW)){
+        LogPrint(1,"CheckBlockHeader Failed\n");
         return false;
+    }
 
     // Check the merkle root.
+//LogPrint(1,"Checking MerkleRoot...\n");
     if (fCheckMerkleRoot) {
         bool mutated;
         uint256 hashMerkleRoot2 = BlockMerkleRoot(block, &mutated);
@@ -2891,9 +2898,18 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // checks that use witness data may be performed here.
 
     // Size limits
-    if (block.vtx.empty() || block.vtx.size() * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT)
+//LogPrint(1,"Checking sizes...\n");
+    if (block.vtx.empty() || block.vtx.size() * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT){
+        LogPrint(1,"tx-size:    block.vtx.size() * WITNESS_SCALE_FACTOR = %d\n", block.vtx.size() * WITNESS_SCALE_FACTOR);
+        LogPrint(1,"block size: SerializeSize = %d\n", ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION ));
+        LogPrint(1,"calc size:  %d\n", ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * WITNESS_SCALE_FACTOR );
+        LogPrint(1,"PROTOCOL_VERSION:                 %08x\n", PROTOCOL_VERSION);
+        LogPrint(1,"SERIALIZE_TRANSACTION_NO_WITNESS: %08x\n", SERIALIZE_TRANSACTION_NO_WITNESS);
+        LogPrint(1," P|S : %08x\n",(PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS));
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-length", false, "size limits failed");
+    }
 
+//LogPrint(1,"Checking coinbase tx's...\n");
     // First transaction must be coinbase, the rest must not be
     if (block.vtx.empty() || !block.vtx[0]->IsCoinBase())
         return state.DoS(100, false, REJECT_INVALID, "bad-cb-missing", false, "first tx is not coinbase");
@@ -2902,11 +2918,13 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
 
     // Check transactions
+//LogPrint(1,"Checking included tx's..\n");
     for (const auto& tx : block.vtx)
         if (!CheckTransaction(*tx, state, false))
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
                                  strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
 
+//LogPrint(1,"Checking Witness stuff...\n");
     unsigned int nSigOps = 0;
     for (const auto& tx : block.vtx)
     {
@@ -3007,8 +3025,19 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     }
 
     // Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
-        return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+    if(nHeight > 156000 && nHeight < 2904090 ){
+        if( nHeight % 8000 ==0){
+            if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams)){
+                LogPrint(1,"has %08x, need %08x\n", block.nBits, GetNextWorkRequired(pindexPrev, &block, consensusParams));
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+            }else{
+                LogPrint(1,"PASS : %08x\n", block.nBits);
+            }
+        }
+    }else{
+        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+    }
 
     // Check against checkpoints
     if (fCheckpointsEnabled) {
@@ -3030,12 +3059,18 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 3, 4 and 5 upgrades
+    /*
     if(((block.nVersion & 0xFF) < VERSIONBITS_TOP_BITS && (block.nVersion & 0xFF) < 3 && nHeight >= consensusParams.BIP65Height) ||
        ((block.nVersion & 0xFF) < VERSIONBITS_TOP_BITS && (block.nVersion & 0xFF) < 4 && nHeight >= consensusParams.BIP66Height) ||
        ((block.nVersion & 0xFF) < VERSIONBITS_TOP_BITS && (block.nVersion & 0xFF) < 5 && nHeight >= consensusParams.BlockVer5Height))
             return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
-
+    */
+    if( ( block.nVersion < 3 && nHeight >= consensusParams.BIP65Height) ||
+        ( block.nVersion < 4 && nHeight >= consensusParams.BIP66Height) ||
+        ((block.nVersion & 0xFF) < VERSIONBITS_TOP_BITS && (block.nVersion & 0xFF) < 5 && nHeight >= consensusParams.BlockVer5Height))
+            return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
+                                 strprintf("rejected nVersion=0x%08x block", block.nVersion));
     return true;
 }
 
@@ -3211,7 +3246,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
 
     CBlockIndex *pindexDummy = nullptr;
     CBlockIndex *&pindex = ppindex ? *ppindex : pindexDummy;
-
+//LogPrint(1,"AcceptBlock - 1\n");
     if (!AcceptBlockHeader(block, state, chainparams, &pindex))
         return false;
 
@@ -3247,7 +3282,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         if (pindex->nChainWork < nMinimumChainWork) return true;
     }
     if (fNewBlock) *fNewBlock = true;
-
+//LogPrint(1,"AcceptBlock - 2\n");
     if (!CheckBlock(block, state, chainparams.GetConsensus()) ||
         !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev)) {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
@@ -3256,7 +3291,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
         }
         return error("%s: %s", __func__, FormatStateMessage(state));
     }
-
+//LogPrint(1,"AcceptBlock - 3\n");
     // Header is valid/has work, merkle tree and segwit merkle tree are good...RELAY NOW
     // (but if it does not build on our best tip, let the SendMessages loop relay it)
     if (!IsInitialBlockDownload() && chainActive.Tip() == pindex->pprev)
@@ -3296,7 +3331,7 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
         // Ensure that CheckBlock() passes before calling AcceptBlock, as
         // belt-and-suspenders.
         bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus());
-
+        if(!ret){ LogPrint(1,"CheckBlock failed.\n"); }
         LOCK(cs_main);
 
         if (ret) {

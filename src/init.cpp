@@ -531,8 +531,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/viacoin/viacoin>";
-    const std::string URL_WEBSITE = "<https://viacoin.org>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/sexcoin-project/sexcoin>";
+    const std::string URL_WEBSITE = "<https://sexcoin.info>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2014, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +
@@ -830,7 +830,7 @@ void InitLogging()
     fLogIPs = gArgs.GetBoolArg("-logips", DEFAULT_LOGIPS);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("Viacoin version %s\n", FormatFullVersion());
+    LogPrintf("Sexcoin version %s\n", FormatFullVersion());
 }
 
 namespace { // Variables internal to initialization process only

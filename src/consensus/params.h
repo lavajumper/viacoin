@@ -47,10 +47,15 @@ struct Params {
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
 
-    /** Viacoin enforcing block version 5 */
+    /** Sexcoin enforcing block version 5 */
     int BlockVer5Height;
+    
+    /** Sexcoin enforcing block version 4
+     *  note: this is the same as EnforceV2AfterHeight in sexcoin 0.10
+    */
+    int BlockVer4Height; 
 
-    /** AuxPow starting height for Viacoin */
+    /** AuxPow starting height for Sexcoin */
     int nAuxPowStartHeight;
     int nWitnessStartHeight;
 
@@ -68,9 +73,24 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
+    int64_t nPowTargetSpacing2;
+    int64_t nPowTargetTimespan2;
+    int64_t nPowTargetSpacing3;
+    int64_t nPowTargetTimespan3;
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
+    int64_t DifficultyAdjustmentInterval2() const { return nPowTargetTimespan2 / nPowTargetSpacing2; }
+    int64_t DifficultyAdjustmentInterval3() const { return nPowTargetTimespan3 / nPowTargetSpacing3; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+    
+    /**
+     * Sexcoin previous fork heighths
+     */
+     int Fork1Height; // 1st fork for retarget change
+     int Fork2Height; // 1st fork for kgw activation
+     int Fork3Height; // 2nd fork for kgw, kgw vulnerability fixed
+     int Fork4Height; // 4th fork, fixed magic number problem, age verification and block version.
+     
 };
 } // namespace Consensus
 

@@ -7,6 +7,7 @@
 #define BITCOIN_PRIMITIVES_TRANSACTION_H
 
 #include <stdint.h>
+#include "primitives/transactionflags.h"
 #include "amount.h"
 #include "script/script.h"
 #include "serialize.h"
@@ -356,6 +357,10 @@ public:
         }
         return false;
     }
+    
+    int16_t GetAVFlags(){ return nVersion >> 16; }
+    std::string GetFlagName(transflag_t flag) const;
+    int32_t CalculateVersionWithFlag(transflag_t, int32_t nVersion);
 };
 
 /** A mutable version of CTransaction. */
@@ -404,6 +409,10 @@ struct CMutableTransaction
         }
         return false;
     }
+    
+    int16_t GetAVFlags(){ return nVersion >> 16; }
+    std::string GetFlagName(transflag_t flag) const;
+    int32_t CalculateVersionWithFlag(transflag_t, int32_t nVersion);
 };
 
 typedef std::shared_ptr<const CTransaction> CTransactionRef;
