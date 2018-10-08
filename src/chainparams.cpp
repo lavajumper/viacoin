@@ -229,10 +229,10 @@ public:
         consensus.BIP66Height = 20000;
         consensus.BlockVer5Height = 27000;
         
-        consensus.Fork1Height = 155000;
-        consensus.Fork2Height = 572000;
-        consensus.Fork3Height = 643808;
-        consensus.BlockVer4Height = 2348569;
+        consensus.Fork1Height = 12200;
+        consensus.Fork2Height = 13200;
+        consensus.Fork3Height = 15808;
+        consensus.BlockVer4Height = 16569;
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5);
         consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 Hours days
         consensus.nPowTargetSpacing = 1 * 60;
@@ -242,7 +242,7 @@ public:
         consensus.nMinerConfirmationWindow = 3600; // nPowTargetTimespan / nPowTargetSpacing
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
-        consensus.nWitnessStartHeight = 28000;
+        consensus.nWitnessStartHeight = 19000;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
