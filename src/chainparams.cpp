@@ -229,12 +229,12 @@ public:
         consensus.BIP66Height = 20000;
         consensus.BlockVer5Height = 27000;
         
-        consensus.Fork1Height = 12200;
-        consensus.Fork2Height = 13200;
-        consensus.Fork3Height = 15808;
-        consensus.BlockVer4Height = 16569;
+        consensus.Fork1Height = 155000;
+        consensus.Fork2Height = 572000;
+        consensus.Fork3Height = 643808;
+        consensus.BlockVer4Height = 2348569;
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5);
-        consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 Hours days
+        consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 Hours 
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
