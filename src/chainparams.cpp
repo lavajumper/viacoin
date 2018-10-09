@@ -240,6 +240,13 @@ public:
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 2700; // 75% for testchains
         consensus.nMinerConfirmationWindow = 3600; // nPowTargetTimespan / nPowTargetSpacing
+        
+        consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
+        consensus.nPowTargetSpacing2 = 30; // 30 seconds
+        
+        consensus.nPowTargetTimespan3 = 15 * 60; // 15 minutes
+        consensus.nPowTargetSpacing3 = 60; // 60 seconds
+
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
         consensus.nWitnessStartHeight = 22000;
