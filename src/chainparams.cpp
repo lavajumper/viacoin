@@ -249,7 +249,7 @@ public:
 
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
-        consensus.nWitnessStartHeight = 19700;
+        consensus.nWitnessStartHeight = 19900;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
