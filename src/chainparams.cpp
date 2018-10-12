@@ -238,7 +238,7 @@ public:
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 2700; // 75% for testchains
+        consensus.nRuleChangeActivationThreshold = 25; // sexcoin retargets every block //75% for testchains
         consensus.nMinerConfirmationWindow = 3600; // nPowTargetTimespan / nPowTargetSpacing
         
         consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
