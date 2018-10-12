@@ -374,7 +374,8 @@ UniValue getaddressesbyaccount(const JSONRPCRequest& request)
     return ret;
 }
 
-static void SendMoney(CWallet * const pwallet, const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, const CCoinControl& coin_control)
+// note to developers: Age Verification flags should be set before calling this function.
+static void SendMoney(CWallet * const pwallet, const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, const CCoinControl& coin_control, int32_t nVersion)
 {
     CAmount curBalance = pwallet->GetBalance();
     
@@ -395,12 +396,13 @@ static void SendMoney(CWallet * const pwallet, const CTxDestination &address, CA
     // Create and send the transaction
     CReserveKey reservekey(pwallet);
     CAmount nFeeRequired;
+    //int32_t nVersion= nAgeFlags + CTransaction::CURRENT_VERSION;
     std::string strError;
     std::vector<CRecipient> vecSend;
     int nChangePosRet = -1;
     CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount};
     vecSend.push_back(recipient);
-    if (!pwallet->CreateTransaction(vecSend, wtxNew, reservekey, nFeeRequired, nChangePosRet, strError, coin_control)) {
+    if (!pwallet->CreateTransaction(vecSend, wtxNew, nVersion, reservekey, nFeeRequired, nChangePosRet, strError, coin_control)) {
         if (!fSubtractFeeFromAmount && nValue + nFeeRequired > curBalance)
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s", FormatMoney(nFeeRequired));
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
@@ -421,24 +423,25 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 8)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 9)
         throw std::runtime_error(
-            "sendtoaddress \"address\" amount ( \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
+            "sendtoaddress \"address\" amount ( [none|consent|over18|over21 ] \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
             "\nSend an amount to a given address.\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
             "1. \"address\"            (string, required) The sexcoin address to send to.\n"
             "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
-            "3. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
+            "3. \"none |consent | over18 | over21 \"    (string, optional) Set the age verification flag for the transaction\n"
+            "4. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
             "                             This is not part of the transaction, just kept in your wallet.\n"
-            "4. \"comment_to\"         (string, optional) A comment to store the name of the person or organization \n"
+            "5. \"comment_to\"         (string, optional) A comment to store the name of the person or organization \n"
             "                             to which you're sending the transaction. This is not part of the \n"
             "                             transaction, just kept in your wallet.\n"
-            "5. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "6. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
             "                             The recipient will receive less sexcoins than you enter in the amount field.\n"
-            "6. replaceable            (boolean, optional) Allow this transaction to be replaced by a transaction with higher fees via BIP 125\n"
-            "7. conf_target            (numeric, optional) Confirmation target (in blocks)\n"
-            "8. \"estimate_mode\"      (string, optional, default=UNSET) The fee estimate mode, must be one of:\n"
+            "7. replaceable            (boolean, optional) Allow this transaction to be replaced by a transaction with higher fees via BIP 125\n"
+            "8. conf_target            (numeric, optional) Confirmation target (in blocks)\n"
+            "9. \"estimate_mode\"      (string, optional, default=UNSET) The fee estimate mode, must be one of:\n"
             "       \"UNSET\"\n"
             "       \"ECONOMICAL\"\n"
             "       \"CONSERVATIVE\"\n"
@@ -462,29 +465,49 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
     if (nAmount <= 0)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
 
+    int32_t nFlags=0;
+    if( request.params.size() > 2 && !request.params[2].isNull() && !request.params[2].get_str().empty())
+    {
+        if("none" == request.params[2].get_str())
+            nFlags = TX_F_NONE;
+        else if("consent" == request.params[2].get_str())
+            nFlags = TX_F_IS_OVER_CONSENT << 16;
+        else if("over18" == request.params[2].get_str())
+            nFlags = TX_F_IS_OVER_18 << 16;
+        else if("over21" == request.params[2].get_str())
+            nFlags = TX_F_IS_OVER_21 << 16;
+        else
+            nFlags =TX_F_INVALID_CODE;
+    }
+
+    if(nFlags == TX_F_INVALID_CODE)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid transaction flag (valid values are: none, consent, over18, over21 )");
+    
+    int32_t nVersion = nFlags + CTransaction::CURRENT_VERSION; 
+    
     // Wallet comments
     CWalletTx wtx;
-    if (request.params.size() > 2 && !request.params[2].isNull() && !request.params[2].get_str().empty())
-        wtx.mapValue["comment"] = request.params[2].get_str();
     if (request.params.size() > 3 && !request.params[3].isNull() && !request.params[3].get_str().empty())
-        wtx.mapValue["to"]      = request.params[3].get_str();
+        wtx.mapValue["comment"] = request.params[3].get_str();
+    if (request.params.size() > 4 && !request.params[4].isNull() && !request.params[4].get_str().empty())
+        wtx.mapValue["to"]      = request.params[4].get_str();
 
     bool fSubtractFeeFromAmount = false;
-    if (request.params.size() > 4 && !request.params[4].isNull()) {
-        fSubtractFeeFromAmount = request.params[4].get_bool();
+    if (request.params.size() > 4 && !request.params[5].isNull()) {
+        fSubtractFeeFromAmount = request.params[5].get_bool();
     }
 
     CCoinControl coin_control;
-    if (request.params.size() > 5 && !request.params[5].isNull()) {
-        coin_control.signalRbf = request.params[5].get_bool();
+    if (request.params.size() > 5 && !request.params[6].isNull()) {
+        coin_control.signalRbf = request.params[6].get_bool();
     }
 
-    if (request.params.size() > 6 && !request.params[6].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[6]);
+    if (request.params.size() > 6 && !request.params[7].isNull()) {
+        coin_control.m_confirm_target = ParseConfirmTarget(request.params[7]);
     }
 
-    if (request.params.size() > 7 && !request.params[7].isNull()) {
-        if (!FeeModeFromString(request.params[7].get_str(), coin_control.m_fee_mode)) {
+    if (request.params.size() > 7 && !request.params[8].isNull()) {
+        if (!FeeModeFromString(request.params[8].get_str(), coin_control.m_fee_mode)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid estimate_mode parameter");
         }
     }
@@ -492,7 +515,7 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    SendMoney(pwallet, address.Get(), nAmount, fSubtractFeeFromAmount, wtx, coin_control);
+    SendMoney(pwallet, address.Get(), nAmount, fSubtractFeeFromAmount, wtx, coin_control, nVersion);
 
     return wtx.GetHash().GetHex();
 }
@@ -862,9 +885,9 @@ UniValue sendfrom(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() < 3 || request.params.size() > 6)
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 7)
         throw std::runtime_error(
-            "sendfrom \"fromaccount\" \"toaddress\" amount ( minconf \"comment\" \"comment_to\" )\n"
+            "sendfrom \"fromaccount\" \"toaddress\" amount ( minconf [ \"none|consent|over18|over21\" ] \"comment\" \"comment_to\" )\n"
             "\nDEPRECATED (use sendtoaddress). Sent an amount from an account to a sexcoin address."
             + HelpRequiringPassphrase(pwallet) + "\n"
             "\nArguments:\n"
@@ -875,20 +898,21 @@ UniValue sendfrom(const JSONRPCRequest& request)
             "2. \"toaddress\"         (string, required) The sexcoin address to send funds to.\n"
             "3. amount                (numeric or string, required) The amount in " + CURRENCY_UNIT + " (transaction fee is added on top).\n"
             "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-            "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
+            "5. \"transflag\"         (string, optional, none|consent|over18|over21) Set the age verified flag in the transaction\n"
+            "6. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
             "                                     This is not part of the transaction, just kept in your wallet.\n"
-            "6. \"comment_to\"        (string, optional) An optional comment to store the name of the person or organization \n"
+            "7. \"comment_to\"        (string, optional) An optional comment to store the name of the person or organization \n"
             "                                     to which you're sending the transaction. This is not part of the transaction, \n"
             "                                     it is just kept in your wallet.\n"
             "\nResult:\n"
             "\"txid\"                 (string) The transaction id.\n"
             "\nExamples:\n"
             "\nSend 0.01 " + CURRENCY_UNIT + " from the default account to the address, must have at least 1 confirmation\n"
-            + HelpExampleCli("sendfrom", "\"\" \"Vv6rMNz4Pp5btJ9SiwQfdYA29EM2mdREu6\" 0.01") +
+            + HelpExampleCli("sendfrom", "\"\" \"S7NgcaY5qtjsBpNqdJsYbeTjacwuCUhC2Z\" 0.01") +
             "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n"
-            + HelpExampleCli("sendfrom", "\"tabby\" \"Vv6rMNz4Pp5btJ9SiwQfdYA29EM2mdREu6\" 0.01 6 \"donation\" \"seans outpost\"") +
+            + HelpExampleCli("sendfrom", "\"tabby\" \"S7NgcaY5qtjsBpNqdJsYbeTjacwuCUhC2Z\" 0.01 6 \"over18\" \"donation\" \"Android Support\"") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("sendfrom", "\"tabby\", \"Vv6rMNz4Pp5btJ9SiwQfdYA29EM2mdREu6\", 0.01, 6, \"donation\", \"seans outpost\"")
+            + HelpExampleRpc("sendfrom", "\"tabby\", \"S7NgcaY5qtjsBpNqdJsYbeTjacwuCUhC2Z\", 0.01, 6, \"donation\", \"Android Support\"")
         );
 
     LOCK2(cs_main, pwallet->cs_wallet);
@@ -905,11 +929,33 @@ UniValue sendfrom(const JSONRPCRequest& request)
         nMinDepth = request.params[3].get_int();
 
     CWalletTx wtx;
+    int32_t nFlags=0;
+    if(request.params.size() > 4 && !request.params[4].isNull() && !request.params[4].get_str().empty() )
+    {
+        if("none" == request.params[4].get_str())
+            nFlags = TX_F_NONE;
+        else if("consent" == request.params[4].get_str())
+            nFlags = TX_F_IS_OVER_CONSENT << 16;
+        else if("over18" == request.params[4].get_str())
+            nFlags = TX_F_IS_OVER_18 << 16;
+        else if("over21" == request.params[4].get_str())
+            nFlags = TX_F_IS_OVER_21 << 16;
+        else
+            nFlags = TX_F_INVALID_CODE;
+    }
+    
+    if(nFlags == TX_F_INVALID_CODE){
+        nFlags = 0;
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid transaction flag (valid values are: none, consent, over18, over21 )");
+    }
+    
+    int32_t nVersion = nFlags + CTransaction::CURRENT_VERSION;
+    
     wtx.strFromAccount = strAccount;
-    if (request.params.size() > 4 && !request.params[4].isNull() && !request.params[4].get_str().empty())
-        wtx.mapValue["comment"] = request.params[4].get_str();
     if (request.params.size() > 5 && !request.params[5].isNull() && !request.params[5].get_str().empty())
-        wtx.mapValue["to"]      = request.params[5].get_str();
+        wtx.mapValue["comment"] = request.params[4].get_str();
+    if (request.params.size() > 6 && !request.params[6].isNull() && !request.params[6].get_str().empty())
+        wtx.mapValue["to"]      = request.params[6].get_str();
 
     EnsureWalletIsUnlocked(pwallet);
 
@@ -919,7 +965,7 @@ UniValue sendfrom(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     CCoinControl no_coin_control; // This is a deprecated API
-    SendMoney(pwallet, address.Get(), nAmount, false, wtx, no_coin_control);
+    SendMoney(pwallet, address.Get(), nAmount, false, wtx, no_coin_control, nVersion);
 
     return wtx.GetHash().GetHex();
 }
@@ -1054,7 +1100,7 @@ UniValue sendmany(const JSONRPCRequest& request)
     CAmount nFeeRequired = 0;
     int nChangePosRet = -1;
     std::string strFailReason;
-    bool fCreated = pwallet->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, nChangePosRet, strFailReason, coin_control);
+    bool fCreated = pwallet->CreateTransaction(vecSend, wtx, CTransaction::CURRENT_VERSION, keyChange, nFeeRequired, nChangePosRet, strFailReason, coin_control);
     if (!fCreated)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
     CValidationState state;

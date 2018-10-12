@@ -258,12 +258,12 @@ public:
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1494547200; // May 12, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1526083200; // May 12, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1760294955; // Oct 12, 2025
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1494547200; // May 12, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1526083200; // May 12, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1760294955; // Oct 12, 2025
 
         // The best chain should have at least this much work.
         //consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000002830dab7f76dbb7d63");
@@ -345,7 +345,12 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1251; // BIP65 activated on regtest (Used in rpc activation tests)
         consensus.BIP66Height = 1351; // BIP66 activated on regtest (Used in rpc activation tests)
-        consensus.BlockVer5Height = 1697078;
+        consensus.BlockVer5Height = 9000;
+        
+        consensus.Fork1Height = 4500;
+        consensus.Fork2Height = 5000;
+        consensus.Fork3Height = 6508;
+        consensus.BlockVer4Height = 7569;
         consensus.powLimit = uint256S("efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint25(0) >> 1
         consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 hours
         consensus.nPowTargetSpacing = 1 * 60;
@@ -353,6 +358,12 @@ public:
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
         consensus.nMinerConfirmationWindow = 30; // Faster than normal for regtest (144 instead of 2016)
+        
+        consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
+        consensus.nPowTargetSpacing2 = 30; // 30 seconds
+        
+        consensus.nPowTargetTimespan3 = 15 * 60; // 15 minutes
+        consensus.nPowTargetSpacing3 = 60; // 60 seconds
 
         consensus.nAuxPowStartHeight = AuxPow::START_REGTEST;
         consensus.nWitnessStartHeight = 20000;

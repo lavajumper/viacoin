@@ -2574,7 +2574,7 @@ bool CWallet::FundTransaction(CMutableTransaction& tx, CAmount& nFeeRet, int& nC
 
     CReserveKey reservekey(this);
     CWalletTx wtx;
-    if (!CreateTransaction(vecSend, wtx, reservekey, nFeeRet, nChangePosInOut, strFailReason, coinControl, false)) {
+    if (!CreateTransaction(vecSend, wtx, tx.nVersion, reservekey, nFeeRet, nChangePosInOut, strFailReason, coinControl, false)) {
         return false;
     }
 
@@ -2619,8 +2619,9 @@ static CFeeRate GetDiscardRate(const CBlockPolicyEstimator& estimator)
     return discard_rate;
 }
 
-bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet,
-                                int& nChangePosInOut, std::string& strFailReason, const CCoinControl& coin_control, bool sign)
+bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, int32_t nVersion, CReserveKey& reservekey, 
+                                CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason, const CCoinControl& coin_control, 
+                                bool sign)
 {
     CAmount nValue = 0;
     int nChangePosRequest = nChangePosInOut;
@@ -2646,6 +2647,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
     wtxNew.fTimeReceivedIsTxTime = true;
     wtxNew.BindWallet(this);
     CMutableTransaction txNew;
+    txNew.nVersion = nVersion;
 
     // Discourage fee sniping.
     //
