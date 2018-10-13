@@ -223,16 +223,16 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 200000;
-        consensus.BIP34Height = -1;
+        consensus.BIP34Height = -1; // Block v2, Height in Coinbase
         consensus.BIP34Hash = uint256S("0x0");
-        consensus.BIP65Height = 20000;
-        consensus.BIP66Height = 20000;
-        consensus.BlockVer5Height = 27000;
+        consensus.BIP65Height = 5200; // OP_CHECKLOCKTIMEVERIFY
+        consensus.BIP66Height = 5200; // Strict DER signatures
+        consensus.BlockVer5Height = 5200; 
         
-        consensus.Fork1Height = 14000;
-        consensus.Fork2Height = 15600;
-        consensus.Fork3Height = 17608;
-        consensus.BlockVer4Height = 18569;
+        consensus.Fork1Height = 2400;
+        consensus.Fork2Height = 3200;
+        consensus.Fork3Height = 3908;
+        consensus.BlockVer4Height = 5069;
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5);
         consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 Hours 
         consensus.nPowTargetSpacing = 1 * 60;
@@ -249,7 +249,7 @@ public:
 
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
-        consensus.nWitnessStartHeight = 20000;
+        consensus.nWitnessStartHeight = 5200;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
