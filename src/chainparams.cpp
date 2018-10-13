@@ -238,8 +238,8 @@ public:
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 25; // sexcoin retargets every block //75% for testchains
-        consensus.nMinerConfirmationWindow = 3600; // nPowTargetTimespan / nPowTargetSpacing
+        consensus.nRuleChangeActivationThreshold = 1; // sexcoin retargets every block //75% for testchains
+        consensus.nMinerConfirmationWindow = 25; // nPowTargetTimespan / nPowTargetSpacing
         
         consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
         consensus.nPowTargetSpacing2 = 30; // 30 seconds
@@ -249,7 +249,7 @@ public:
 
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
-        consensus.nWitnessStartHeight = 19900;
+        consensus.nWitnessStartHeight = 20000;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
