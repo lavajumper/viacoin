@@ -358,9 +358,17 @@ public:
         return false;
     }
     
+    // Sexcoin Age Verification functions
     int16_t GetAVFlags(){ return nVersion >> 16; }
     std::string GetFlagName(transflag_t flag) const;
     int32_t CalculateVersionWithFlag(transflag_t, int32_t nVersion);
+    int16_t GetRawFlags() const { return (nVersion >> 16); }
+    bool IsConsentAge() const { return (nVersion >> 16 & TX_F_IS_OVER_CONSENT); }
+    bool IsOver18() const { return (nVersion >> 16 & TX_F_IS_OVER_18); }
+    bool IsOver21() const { return (nVersion >> 16 & TX_F_IS_OVER_21); } 
+    bool IsFlagSet(transflag_t flag){ return nVersion & flag; }
+     
+    static bool IsFlagSet(transflag_t nFlag, int32_t nVersion){ return nVersion & nFlag; }
 };
 
 /** A mutable version of CTransaction. */

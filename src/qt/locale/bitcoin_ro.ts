@@ -76,7 +76,7 @@
     </message>
 </context>
 <context>
-    <name>ViacoinGUI</name>
+    <name>SexcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Semnează &amp;mesajul...</translation>
@@ -142,8 +142,8 @@
         <translation>Deschide &amp;URI...</translation>
     </message>
     <message>
-        <source>Send coins to a Viacoin address</source>
-        <translation>Trimite monedele către o adresă Viacoin</translation>
+        <source>Send coins to a Sexcoin address</source>
+        <translation>Trimite monedele către o adresă Sexcoin</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -166,8 +166,8 @@
         <translation>&amp;Verifică mesajul...</translation>
     </message>
     <message>
-        <source>Viacoin</source>
-        <translation>Viacoin</translation>
+        <source>Sexcoin</source>
+        <translation>Sexcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -194,12 +194,12 @@
         <translation>Criptează cheile private care aparțin portofelului tău.</translation>
     </message>
     <message>
-        <source>Sign messages with your Viacoin addresses to prove you own them</source>
-        <translation>Semnează mesajele cu adresa ta de Viacoin pentru a face dovada că îți aparțin.</translation>
+        <source>Sign messages with your Sexcoin addresses to prove you own them</source>
+        <translation>Semnează mesajele cu adresa ta de Sexcoin pentru a face dovada că îți aparțin.</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Viacoin addresses</source>
-        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de Viacoin specificată.</translation>
+        <source>Verify messages to ensure they were signed with specified Sexcoin addresses</source>
+        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de Sexcoin specificată.</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -214,12 +214,12 @@
         <translation>&amp;Ajutor</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and viacoin: URIs)</source>
-        <translation>Cerere plată (generează coduri QR și viacoin: URIs)</translation>
+        <source>Request payments (generates QR codes and sexcoin: URIs)</source>
+        <translation>Cerere plată (generează coduri QR și sexcoin: URIs)</translation>
     </message>
     <message>
-        <source>Open a viacoin: URI or payment request</source>
-        <translation>Deschide un viacoin: URI sau cerere de plată</translation>
+        <source>Open a sexcoin: URI or payment request</source>
+        <translation>Deschide un sexcoin: URI sau cerere de plată</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -746,10 +746,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>viacoin-core</name>
+    <name>sexcoin-core</name>
     <message>
-        <source>Viacoin Core</source>
-        <translation>Viacoin Core</translation>
+        <source>Sexcoin Core</source>
+        <translation>Sexcoin Core</translation>
     </message>
     <message>
         <source>Information</source>
