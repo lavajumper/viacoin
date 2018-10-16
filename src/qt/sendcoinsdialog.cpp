@@ -23,6 +23,7 @@
 #include "txmempool.h"
 #include "policy/fees.h"
 #include "wallet/wallet.h"
+#include "primitives/transactionflags.h"
 
 #include <QFontMetrics>
 #include <QMessageBox>
@@ -278,6 +279,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
     updateCoinControlState(ctrl);
 
+    currentTransaction.setTransactionFlags(nTransactionFlags);
     prepareStatus = model->prepareTransaction(currentTransaction, ctrl);
 
     // process prepareStatus and on error generate message shown to user
