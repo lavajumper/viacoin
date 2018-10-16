@@ -126,6 +126,12 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *p
     ui->customFee->setValue(settings.value("nTransactionFee").toLongLong());
     ui->checkBoxMinimumFee->setChecked(settings.value("fPayOnlyMinFee").toBool());
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
+    
+    ui->groupAge->setId(ui->radioButton_overNone, 0);
+    ui->groupAge->setId(ui->radioButton_overConsent, 1);
+    ui->groupAge->setId(ui->radioButton_over18, 2);
+    ui->groupAge->setId(ui->radioButton_over21, 3);
+    nTransactionFlags = 0;
 }
 
 void SendCoinsDialog::setClientModel(ClientModel *_clientModel)
@@ -163,6 +169,13 @@ void SendCoinsDialog::setModel(WalletModel *_model)
         connect(_model->getOptionsModel(), SIGNAL(coinControlFeaturesChanged(bool)), this, SLOT(coinControlFeatureChanged(bool)));
         ui->frameCoinControl->setVisible(_model->getOptionsModel()->getCoinControlFeatures());
         coinControlUpdateLabels();
+
+        // age verification
+        //connect(ui->groupAge, SIGNAL(buttonClicked(int)), this, SLOT(updateAgeVerification());
+        connect(ui->radioButton_overNone, SIGNAL(toggled(bool)), this, SLOT(on_radioButton_overNone(bool)));
+        connect(ui->radioButton_overConsent, SIGNAL(toggled(bool)), this, SLOT(on_radioButton_overConsent(bool)));
+        connect(ui->radioButton_over18, SIGNAL(toggled(bool)), this, SLOT(on_radioButton_over18(bool)));
+        connect(ui->radioButton_over21, SIGNAL(toggled(bool)), this, SLOT(on_radioButton_over21(bool)));
 
         // fee section
         for (const int &n : confTargets) {
@@ -242,7 +255,9 @@ void SendCoinsDialog::on_sendButton_clicked()
     {
         return;
     }
-
+    // Make sure nTransactionFlags are valid
+    setTransactionFlags();
+    
     fNewRecipientAllowed = false;
     WalletModel::UnlockContext ctx(model->requestUnlock());
     if(!ctx.isValid())
@@ -591,6 +606,40 @@ void SendCoinsDialog::minimizeFeeSection(bool fMinimize)
 void SendCoinsDialog::on_buttonChooseFee_clicked()
 {
     minimizeFeeSection(false);
+}
+
+void SendCoinsDialog::setTransactionFlags(){
+    if(ui->radioButton_overNone->isChecked())
+        nTransactionFlags = TX_F_NONE;
+    else if(ui->radioButton_overConsent->isChecked())
+        nTransactionFlags = TX_F_IS_OVER_CONSENT;
+    else if(ui->radioButton_over18->isChecked())
+        nTransactionFlags = TX_F_IS_OVER_18;
+    else if(ui->radioButton_over21->isChecked())
+        nTransactionFlags = TX_F_IS_OVER_21;
+    else
+        nTransactionFlags = TX_F_NONE;
+}
+
+
+void SendCoinsDialog::on_radioButton_overNone(bool on){
+    if(on)
+        setTransactionFlags();
+}
+
+void SendCoinsDialog::on_radioButton_overConsent(bool on){
+    if(on)
+        setTransactionFlags();
+}
+
+void SendCoinsDialog::on_radioButton_over18(bool on){
+    if(on)
+        setTransactionFlags();
+}
+
+void SendCoinsDialog::on_radioButton_over21(bool on){
+    if(on)
+        setTransactionFlags();
 }
 
 void SendCoinsDialog::on_buttonMinimizeFee_clicked()
