@@ -477,7 +477,8 @@ QString TransactionTableModel::formatTxFlags(const TransactionRecord *wtx ) cons
     case TX_F_IS_OVER_21:
         return tr("over21");
     }
-    return QString("%1").arg(wtx->version);
+    QString g = QString("%1").arg(wtx->version, 0,16);
+    return g;
 
 }
 
