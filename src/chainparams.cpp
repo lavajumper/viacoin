@@ -80,26 +80,25 @@ public:
     CMainParams() {
         strNetworkID = "main";
         consensus.nSubsidyHalvingInterval = 600000;// sexcoin
-        consensus.BIP34Height = 0;
+        consensus.BIP34Height = 0; // blockV2
         consensus.BIP34Hash = uint256S("0x4e9b54001f9976049830128ec0331515eaabe35a70970d79971da1539a400ba1");
-        consensus.BIP65Height = 2348569;
-        consensus.BIP66Height = 2348569;
+        consensus.BIP65Height = 2348569; // OP_CHECKLOCKTIMEVERIFY
+        consensus.BIP66Height = 2348569; // Strict DER signatures
         consensus.BlockVer5Height = 2999000; //sexcion ... calculate for auxpow
         
         consensus.Fork1Height = 155000;
         consensus.Fork2Height = 572000;
         consensus.Fork3Height = 643808;
         consensus.BlockVer4Height = 2348569;
-        //consensus.powLimit = uint256S("000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 23
-        //consensus.powLimit =     uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // MAYBE! 
+
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5); // sexcoin
 
         consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 hours(sexcoin) //14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 1 * 60; // 1 minute(sexcoin) //1 * 24;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 8100; // // 75% of nMinerConfirmationWindow
-        consensus.nMinerConfirmationWindow = 10800; // nPowTargetTimespan / nPowTargetSpacing => 3 days
+        consensus.nRuleChangeActivationThreshold = 144; // // 10% of nMinerConfirmationWindow
+        consensus.nMinerConfirmationWindow = 14400; // Sexcoin retargets every block ... aribitrary number (nPowTargetTimespan / nPowTargetSpacing => 3 days)
         
         consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
         consensus.nPowTargetSpacing2 = 30; // 30 seconds
@@ -116,15 +115,15 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
 
-        // Deployment of BIP68, BIP112, and BIP113.
+        // Deployment of BIP68, BIP112, and BIP113.OP_CHECKSEQUENCEVERIFY
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1498694400; // June 28, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1530230400;   // June 28, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1539892620; // October 18, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1760817419;   // October 18, 2025
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1498694400; // June 28, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1530230400;   // June 28, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1539892620; // October 18, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1760817419;   // October 18, 2025
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("00000000000000000000000000000000000000000000000001c9d8a96f2293ef"); // auxpow start: headers become large
@@ -173,35 +172,35 @@ public:
                 { 41433, uint256S("0x627e18cc08a276282781705bac09508992dc8b665391edd7bde8a601f011954c")},
                 { 44606, uint256S("0x5ceeec38564a36ee3e1e5404970f5715efe0420e92c8e92bedfdfef782c49320")},
                 {3470255, uint256S("0xc3f75474ed8171bc303b4cd7ff269592534c0ca8d76fceed3fdbf8abf40d147a")},*/
-                { 0, uint256S("2946a91685f253cd2ca29cde8cc35d7773cab280cdab4a075f613636e697aca4")},
-                { 5363, uint256S("c5dd0d66a07c176a4463be3df7d9309986a3918b75935dde1c4769e4a64f9593")},
-                { 5369, uint256S("dcd139890a39921876ab035eca34ee48c5239889f1dcdb8e3de3d097847f12d8")},
-                { 5380, uint256S("b105b9cbb7b0ff4f2f6aef1d040c196edc2ab4318f7e6811a4373e8278cd5bb4")},
-                { 13899, uint256S("883879d5325e48511e96557fff17df10123f062de23bc1f91f4e153154dbc764")},
-                { 14050, uint256S("5be09cdd886573a50d543e3cca35a03eff2e46e4596bb2f509cede9e28dd33e9")},
-                { 22984, uint256S("87ecfd9aa3c722132dd1786caa5ccb25b8ff821a3797aa0c424e10662aca509d")},
-                { 39986, uint256S("9dba252fa6eebbf2b6c790965806c51916870bdf1e91bb7bf11eea55e64f12f8")},
-                { 49979, uint256S("e564a2434f3acb7fe4af103927083fee3fa6429afa430e53b6eade3249dfe026")},
-                { 80493, uint256S("6da822b8d4b5c060aee57523952630ac2262d5f56759ffc451ba6298b5fa423b")},
-                { 94458, uint256S("084c2dec2c0da13e8f0143303d8f27ae79c81311ec804b2f746fbc1ad83bff14")},
-                { 136354,uint256S("4f75d45e08213d5bb0584ce1e65666d47596cb8059b20d1c354b5bfd26309fbe")},
-                {146221,uint256S("c9d38afb57b0b25c822b1287197de413204cacfb27ca9c974772d8d8399737cb")},
-                {146849,uint256S("c5e18cab151a7eca95b02bd469c5a2aee301ef1b01e3b72add7f04a9c11f8b60")},
-                {249936,uint256S("6722b04059d14fce5f74eb4a9ea02784ae690c4985ba32801e2cf1f8b65582f3")},
-                {279841,uint256S("eb3bdef3524a2b0fd89f5480ac2a0a82108539b8e3156b598675e7109803cafa")},
-                {319767,uint256S("8fbcfa3dac1721fd899f4cf67a7381a86fdcfb5fb504e1729d6a9fe3b389a790")},
-                {359900,uint256S("fc4faa77d8e6c01941170e131125d5ebb5c9453fbaf3e6c2b0974b66c00f3bcd")},
-                {499996,uint256S("d28773f08f4747ff6e7e4d113753b5a79b60d905e59ae4046fa4b5ee9965badc")},
-                {599825,uint256S("0ddf7a53506b99acd201c13fba89b13837eb1707e97c27416f7513052cfd14af")},
-                {699886,uint256S("1663390cdccecaeea59f35affa91d04f57f9b790b8f1493b7f62d4de2279449a")},
-                {809963,uint256S("e7c094afaeaf37d20ce7d912b8353c41ac51c5219b1984acda32bfc889898203")},
-                {1000293,uint256S("40cb1f758e1c3f71b22326f0f9c610202600bd5f83aea5272f4a2d978d344163")},
-                {1200283,uint256S("6a1238c4d255d45d2669b83730b015ac0534e9e61af543fa66832c918747260f")},
-                {1400278,uint256S("5c75334308a26b9220b50b8d0adf06fed4921e7a2fbc2b5c551bb9a807533b9f")},
-                {1600189,uint256S("4b0608c7e733c1b6d2d660469f1b3c17be857ccb19d8e102f41503ab549e2f69")},
-                {1800085,uint256S("422e9d5dab710fae371a1e182243af38a49db0cfb3d075a5c67da2c4f35df9ef")},
-                {2000124,uint256S("34710dfebf36429ee09c7bd351671a2716f62f60fbbf9fb231be2314e88615ce")},
-                {2100141,uint256S("b449eb898b032e00ec87458991a5182cc541c3b479250ed0087860dc60980412")},
+                { 0, uint256S("0x2946a91685f253cd2ca29cde8cc35d7773cab280cdab4a075f613636e697aca4")},
+                { 5363, uint256S("0xc5dd0d66a07c176a4463be3df7d9309986a3918b75935dde1c4769e4a64f9593")},
+                { 5369, uint256S("0xdcd139890a39921876ab035eca34ee48c5239889f1dcdb8e3de3d097847f12d8")},
+                { 5380, uint256S("0xb105b9cbb7b0ff4f2f6aef1d040c196edc2ab4318f7e6811a4373e8278cd5bb4")},
+                { 13899, uint256S("0x883879d5325e48511e96557fff17df10123f062de23bc1f91f4e153154dbc764")},
+                { 14050, uint256S("0x5be09cdd886573a50d543e3cca35a03eff2e46e4596bb2f509cede9e28dd33e9")},
+                { 22984, uint256S("0x87ecfd9aa3c722132dd1786caa5ccb25b8ff821a3797aa0c424e10662aca509d")},
+                { 39986, uint256S("0x9dba252fa6eebbf2b6c790965806c51916870bdf1e91bb7bf11eea55e64f12f8")},
+                { 49979, uint256S("0xe564a2434f3acb7fe4af103927083fee3fa6429afa430e53b6eade3249dfe026")},
+                { 80493, uint256S("0x6da822b8d4b5c060aee57523952630ac2262d5f56759ffc451ba6298b5fa423b")},
+                { 94458, uint256S("0x084c2dec2c0da13e8f0143303d8f27ae79c81311ec804b2f746fbc1ad83bff14")},
+                { 136354,uint256S("0x4f75d45e08213d5bb0584ce1e65666d47596cb8059b20d1c354b5bfd26309fbe")},
+                {146221,uint256S("0xc9d38afb57b0b25c822b1287197de413204cacfb27ca9c974772d8d8399737cb")},
+                {146849,uint256S("0xc5e18cab151a7eca95b02bd469c5a2aee301ef1b01e3b72add7f04a9c11f8b60")},
+                {249936,uint256S("0x6722b04059d14fce5f74eb4a9ea02784ae690c4985ba32801e2cf1f8b65582f3")},
+                {279841,uint256S("0xeb3bdef3524a2b0fd89f5480ac2a0a82108539b8e3156b598675e7109803cafa")},
+                {319767,uint256S("0x8fbcfa3dac1721fd899f4cf67a7381a86fdcfb5fb504e1729d6a9fe3b389a790")},
+                {359900,uint256S("0xfc4faa77d8e6c01941170e131125d5ebb5c9453fbaf3e6c2b0974b66c00f3bcd")},
+                {499996,uint256S("0xd28773f08f4747ff6e7e4d113753b5a79b60d905e59ae4046fa4b5ee9965badc")},
+                {599825,uint256S("0x0ddf7a53506b99acd201c13fba89b13837eb1707e97c27416f7513052cfd14af")},
+                {699886,uint256S("0x1663390cdccecaeea59f35affa91d04f57f9b790b8f1493b7f62d4de2279449a")},
+                {809963,uint256S("0xe7c094afaeaf37d20ce7d912b8353c41ac51c5219b1984acda32bfc889898203")},
+                {1000293,uint256S("0x40cb1f758e1c3f71b22326f0f9c610202600bd5f83aea5272f4a2d978d344163")},
+                {1200283,uint256S("0x6a1238c4d255d45d2669b83730b015ac0534e9e61af543fa66832c918747260f")},
+                {1400278,uint256S("0x5c75334308a26b9220b50b8d0adf06fed4921e7a2fbc2b5c551bb9a807533b9f")},
+                {1600189,uint256S("0x4b0608c7e733c1b6d2d660469f1b3c17be857ccb19d8e102f41503ab549e2f69")},
+                {1800085,uint256S("0x422e9d5dab710fae371a1e182243af38a49db0cfb3d075a5c67da2c4f35df9ef")},
+                {2000124,uint256S("0x34710dfebf36429ee09c7bd351671a2716f62f60fbbf9fb231be2314e88615ce")},
+                {2100141,uint256S("0xb449eb898b032e00ec87458991a5182cc541c3b479250ed0087860dc60980412")},
             }
         };
 
@@ -225,21 +224,22 @@ public:
         consensus.nSubsidyHalvingInterval = 200000;
         consensus.BIP34Height = -1; // Block v2, Height in Coinbase
         consensus.BIP34Hash = uint256S("0x0");
-        consensus.BIP65Height = 5200; // OP_CHECKLOCKTIMEVERIFY
-        consensus.BIP66Height = 5200; // Strict DER signatures
-        consensus.BlockVer5Height = 5200; 
+        consensus.BIP65Height = 2100; // OP_CHECKLOCKTIMEVERIFY
+        consensus.BIP66Height = 2100; // Strict DER signatures
+        consensus.BlockVer5Height = 2100; 
         
-        consensus.Fork1Height = 2400;
-        consensus.Fork2Height = 3200;
-        consensus.Fork3Height = 3908;
-        consensus.BlockVer4Height = 5069;
+        consensus.Fork1Height = 980;
+        consensus.Fork2Height = 1200;
+        consensus.Fork3Height = 1608;
+        consensus.BlockVer4Height = 1700;
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5);
         consensus.nPowTargetTimespan = 8 * 60 * 60; // 8 Hours 
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1; // sexcoin retargets every block //75% for testchains
-        consensus.nMinerConfirmationWindow = 25; // nPowTargetTimespan / nPowTargetSpacing
+        consensus.nMinerConfirmationWindow = 25; // from other coins:nPowTargetTimespan / nPowTargetSpacing
+                                                 // however sexcoin retargets every block so this is also arbitrary
         
         consensus.nPowTargetTimespan2 = 30 * 60; // 30 minutes
         consensus.nPowTargetSpacing2 = 30; // 30 seconds
@@ -249,18 +249,20 @@ public:
 
 
         consensus.nAuxPowStartHeight = AuxPow::START_TESTNET;
-        consensus.nWitnessStartHeight = 5200;
+        consensus.nWitnessStartHeight = 2100; // this is a hard block height that Litecoin does not have.
+                                              // BIP 65 and 66 have to be active for this to work.
+                                              // Set BIP65, BIP66, BlockV5Height and this to the same value
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1232032894; // start + (1year/25)
 
-        // Deployment of BIP68, BIP112, and BIP113.
+        // Deployment of BIP68, BIP112, and BIP113. - OP_CHECKSEQUENCEVERIFY
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1494547200; // May 12, 2017
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1760294955; // Oct 12, 2025
 
-        // Deployment of SegWit (BIP141, BIP143, and BIP147)
+        // Deployment of SegWit (BIP141, BIP143, and BIP147) - 
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;//1494547200; // May 12, 2017
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;//1760294955; // Oct 12, 2025
