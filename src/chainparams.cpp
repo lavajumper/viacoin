@@ -82,14 +82,14 @@ public:
         consensus.nSubsidyHalvingInterval = 600000;// sexcoin
         consensus.BIP34Height = 0; // blockV2
         consensus.BIP34Hash = uint256S("0x4e9b54001f9976049830128ec0331515eaabe35a70970d79971da1539a400ba1");
-        consensus.BIP65Height = 2348569; // OP_CHECKLOCKTIMEVERIFY
-        consensus.BIP66Height = 2348569; // Strict DER signatures
-        consensus.BlockVer5Height = 2999000; //sexcion ... calculate for auxpow
+        consensus.BIP65Height = 3100000; // OP_CHECKLOCKTIMEVERIFY
+        consensus.BIP66Height = 3100000; // Strict DER signatures
+        consensus.BlockVer5Height = 3100000; //sexcion ... calculate for auxpow
         
         consensus.Fork1Height = 155000;
         consensus.Fork2Height = 572000;
         consensus.Fork3Height = 643808;
-        consensus.BlockVer4Height = 2348569;
+        consensus.BlockVer4Height = 2348569; // age verification start
 
         consensus.powLimit = ArithToUint256(~(arith_uint256(0)) >> 5); // sexcoin
 
@@ -109,7 +109,7 @@ public:
 
         consensus.nAuxPowStartHeight = AuxPow::START_MAINNET;
         //consensus.nWitnessStartHeight = 4040000;
-        consensus.nWitnessStartHeight = 2950000;
+        consensus.nWitnessStartHeight = 3100000;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
