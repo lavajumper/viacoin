@@ -84,7 +84,7 @@ public:
         consensus.BIP34Hash = uint256S("0x4e9b54001f9976049830128ec0331515eaabe35a70970d79971da1539a400ba1");
         consensus.BIP65Height = 3100000; // OP_CHECKLOCKTIMEVERIFY
         consensus.BIP66Height = 3100000; // Strict DER signatures
-        consensus.BlockVer5Height = 3100000; //sexcion ... calculate for auxpow
+        consensus.BlockVer5Height = 3100000; //sexcoin ... calculate for auxpow
         
         consensus.Fork1Height = 155000;
         consensus.Fork2Height = 572000;
@@ -107,7 +107,7 @@ public:
         consensus.nPowTargetSpacing3 = 60; // 60 seconds
 
 
-        consensus.nAuxPowStartHeight = AuxPow::START_MAINNET;
+        consensus.nAuxPowStartHeight = AuxPow::START_MAINNET; // auxpow/consensus.h
         //consensus.nWitnessStartHeight = 4040000;
         consensus.nWitnessStartHeight = 3100000;
 
@@ -167,11 +167,6 @@ public:
 
         checkpointData = (CCheckpointData) {
             {
-              /*{ 3901, uint256S("0x39c94020b653871bbcb29c9489bb12f84c5e89adef75f2e5c5f59e88869129d9")},
-                { 40821, uint256S("0xe0471675f9c98aa5ed321ed951d140d4603d96254a4ca9fbca07b8da5ee11954")},
-                { 41433, uint256S("0x627e18cc08a276282781705bac09508992dc8b665391edd7bde8a601f011954c")},
-                { 44606, uint256S("0x5ceeec38564a36ee3e1e5404970f5715efe0420e92c8e92bedfdfef782c49320")},
-                {3470255, uint256S("0xc3f75474ed8171bc303b4cd7ff269592534c0ca8d76fceed3fdbf8abf40d147a")},*/
                 { 0, uint256S("0x2946a91685f253cd2ca29cde8cc35d7773cab280cdab4a075f613636e697aca4")},
                 { 5363, uint256S("0xc5dd0d66a07c176a4463be3df7d9309986a3918b75935dde1c4769e4a64f9593")},
                 { 5369, uint256S("0xdcd139890a39921876ab035eca34ee48c5239889f1dcdb8e3de3d097847f12d8")},
@@ -201,6 +196,9 @@ public:
                 {1800085,uint256S("0x422e9d5dab710fae371a1e182243af38a49db0cfb3d075a5c67da2c4f35df9ef")},
                 {2000124,uint256S("0x34710dfebf36429ee09c7bd351671a2716f62f60fbbf9fb231be2314e88615ce")},
                 {2100141,uint256S("0xb449eb898b032e00ec87458991a5182cc541c3b479250ed0087860dc60980412")},
+                {2399993,uint256S("0xce314cabe66fb60e79a00170b584595d8113e379f165ed9b530db8cc4cb9da0b")},
+                {2699990,uint256S("0xfc077d18f64576094c6a6397a7588c6b85ddf2c7a2d41b52ba200ab875aea4e2")},
+                {3013737,uint256S("0xeff50a7e9b94b04662d2209dbe8f0f6d0a3796b6f3915cee8ca8dbbae606455c")},
             }
         };
 

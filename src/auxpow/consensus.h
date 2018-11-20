@@ -7,7 +7,7 @@
 namespace AuxPow {
 
 // old 0.10 code used the the testnet height for regtest too
-const int START_MAINNET = 2973450;
+const int START_MAINNET = 3080000;
 const int START_TESTNET = 1750;
 const int START_REGTEST = 4000;
 
