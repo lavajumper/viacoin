@@ -1,8 +1,8 @@
 <!--- Remove sections that do not apply -->
 
-This issue tracker is only for technical issues related to viacoin-core.
+This issue tracker is only for technical issues related to sexcoin-core.
 
-For reporting security issues, please contact the Viacoin developers on the #viacoin-dev Freenode IRC channel or alternatively you can email us at contact@viacoin.org.
+For reporting security issues, please contact the Sexcoin developers on the #sxcdev Freenode IRC channel or alternatively you can email us at dev@sexcoin.info.
 
 ### Describe the issue
 
@@ -21,7 +21,7 @@ Tell us what happens instead
 ### Screenshots.
 If the issue is related to the GUI, screenshots can be added to this issue via drag & drop.
 
-### What version of viacoin-core are you using?
+### What version of sexcoin-core are you using?
 List the version number/commit ID, and if it is an official binary, self compiled or a distribution package such as PPA.
 
 ### Machine specs:

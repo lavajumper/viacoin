@@ -17,7 +17,7 @@ osx=true
 SIGNER=
 VERSION=
 commit=false
-url=https://github.com/viacoin/viacoin
+url=https://github.com/sexcoin-project/sexcoin
 proc=2
 mem=2000
 lxc=true
@@ -31,7 +31,7 @@ commitFiles=true
 read -d '' usage <<- EOF
 Usage: $scriptName [-c|u|v|b|s|B|o|h|j|m|] signer version
 
-Run this script from the directory containing the viacoin, gitian-builder, gitian.sigs.via, and viacoin-detached-sigs.
+Run this script from the directory containing the sexcoin, gitian-builder, gitian.sigs.via, and sexcoin-detached-sigs.
 
 Arguments:
 signer          GPG signer to sign each build assert file
@@ -39,7 +39,7 @@ version		Version number, commit, or branch to build. If building a commit or bra
 
 Options:
 -c|--commit	Indicate that the version argument is for a commit or branch
--u|--url	Specify the URL of the repository. Default is https://github.com/viacoin/viacoin
+-u|--url	Specify the URL of the repository. Default is https://github.com/sexcoin/sexcoin
 -v|--verify 	Verify the gitian build
 -b|--build	Do a gitian build
 -s|--sign	Make signed binaries for Windows and Mac OSX
@@ -232,8 +232,8 @@ echo ${COMMIT}
 if [[ $setup = true ]]
 then
     sudo apt-get install ruby apache2 git apt-cacher-ng python-vm-builder qemu-kvm qemu-utils
-    git clone https://github.com/viacoin/gitian.sigs.via.git
-    git clone https://github.com/viacoin/viacoin-detached-sigs.git
+    git clone https://github.com/sexcoin/gitian.sigs.via.git
+    git clone https://github.com/sexcoin/sexcoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
     pushd ./gitian-builder
     if [[ -n "$USE_LXC" ]]
@@ -247,7 +247,7 @@ then
 fi
 
 # Set up build
-pushd ./viacoin
+pushd ./sexcoin
 git fetch
 git checkout ${COMMIT}
 popd
@@ -256,7 +256,7 @@ popd
 if [[ $build = true ]]
 then
 	# Make output folder
-	mkdir -p ./viacoin-binaries/${VERSION}
+	mkdir -p ./sexcoin-binaries/${VERSION}
 	
 	# Build Dependencies
 	echo ""
@@ -266,7 +266,7 @@ then
 	mkdir -p inputs
 	wget -N -P inputs $osslPatchUrl
 	wget -N -P inputs $osslTarUrl
-	make -C ../viacoin/depends download SOURCES_PATH=`pwd`/cache/common
+	make -C ../sexcoin/depends download SOURCES_PATH=`pwd`/cache/common
 
 	# Linux
 	if [[ $linux = true ]]
@@ -274,9 +274,9 @@ then
             echo ""
 	    echo "Compiling ${VERSION} Linux"
 	    echo ""
-	    ./bin/gbuild -j ${proc} -m ${mem} --commit viacoin=${COMMIT} --url viacoin=${url} ../viacoin/contrib/gitian-descriptors/gitian-linux.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.via/ ../viacoin/contrib/gitian-descriptors/gitian-linux.yml
-	    mv build/out/viacoin-*.tar.gz build/out/src/viacoin-*.tar.gz ../viacoin-binaries/${VERSION}
+	    ./bin/gbuild -j ${proc} -m ${mem} --commit sexcoin=${COMMIT} --url sexcoin=${url} ../sexcoin/contrib/gitian-descriptors/gitian-linux.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.via/ ../sexcoin/contrib/gitian-descriptors/gitian-linux.yml
+	    mv build/out/sexcoin-*.tar.gz build/out/src/sexcoin-*.tar.gz ../sexcoin-binaries/${VERSION}
 	fi
 	# Windows
 	if [[ $windows = true ]]
@@ -284,10 +284,10 @@ then
 	    echo ""
 	    echo "Compiling ${VERSION} Windows"
 	    echo ""
-	    ./bin/gbuild -j ${proc} -m ${mem} --commit viacoin=${COMMIT} --url viacoin=${url} ../viacoin/contrib/gitian-descriptors/gitian-win.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.via/ ../viacoin/contrib/gitian-descriptors/gitian-win.yml
-	    mv build/out/viacoin-*-win-unsigned.tar.gz inputs/viacoin-win-unsigned.tar.gz
-	    mv build/out/viacoin-*.zip build/out/viacoin-*.exe ../viacoin-binaries/${VERSION}
+	    ./bin/gbuild -j ${proc} -m ${mem} --commit sexcoin=${COMMIT} --url sexcoin=${url} ../sexcoin/contrib/gitian-descriptors/gitian-win.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.via/ ../sexcoin/contrib/gitian-descriptors/gitian-win.yml
+	    mv build/out/sexcoin-*-win-unsigned.tar.gz inputs/sexcoin-win-unsigned.tar.gz
+	    mv build/out/sexcoin-*.zip build/out/sexcoin-*.exe ../sexcoin-binaries/${VERSION}
 	fi
 	# Mac OSX
 	if [[ $osx = true ]]
@@ -295,10 +295,10 @@ then
 	    echo ""
 	    echo "Compiling ${VERSION} Mac OSX"
 	    echo ""
-	    ./bin/gbuild -j ${proc} -m ${mem} --commit viacoin=${COMMIT} --url viacoin=${url} ../viacoin/contrib/gitian-descriptors/gitian-osx.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.via/ ../viacoin/contrib/gitian-descriptors/gitian-osx.yml
-	    mv build/out/viacoin-*-osx-unsigned.tar.gz inputs/viacoin-osx-unsigned.tar.gz
-	    mv build/out/viacoin-*.tar.gz build/out/viacoin-*.dmg ../viacoin-binaries/${VERSION}
+	    ./bin/gbuild -j ${proc} -m ${mem} --commit sexcoin=${COMMIT} --url sexcoin=${url} ../sexcoin/contrib/gitian-descriptors/gitian-osx.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.via/ ../sexcoin/contrib/gitian-descriptors/gitian-osx.yml
+	    mv build/out/sexcoin-*-osx-unsigned.tar.gz inputs/sexcoin-osx-unsigned.tar.gz
+	    mv build/out/sexcoin-*.tar.gz build/out/sexcoin-*.dmg ../sexcoin-binaries/${VERSION}
 	fi
 	popd
 
@@ -325,27 +325,27 @@ then
 	echo ""
 	echo "Verifying v${VERSION} Linux"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-linux ../viacoin/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-linux ../sexcoin/contrib/gitian-descriptors/gitian-linux.yml
 	# Windows
 	echo ""
 	echo "Verifying v${VERSION} Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-win-unsigned ../viacoin/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-win-unsigned ../sexcoin/contrib/gitian-descriptors/gitian-win.yml
 	# Mac OSX	
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
 	echo ""	
-	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-unsigned ../viacoin/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-unsigned ../sexcoin/contrib/gitian-descriptors/gitian-osx.yml
 	# Signed Windows
 	echo ""
 	echo "Verifying v${VERSION} Signed Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-signed ../viacoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-signed ../sexcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
 	# Signed Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Signed Mac OSX"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-signed ../viacoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
+	./bin/gverify -v -d ../gitian.sigs.via/ -r ${VERSION}-osx-signed ../sexcoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
 	popd
 fi
 
@@ -360,10 +360,10 @@ then
 	    echo ""
 	    echo "Signing ${VERSION} Windows"
 	    echo ""
-	    ./bin/gbuild -i --commit signature=${COMMIT} ../viacoin/contrib/gitian-descriptors/gitian-win-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.via/ ../viacoin/contrib/gitian-descriptors/gitian-win-signer.yml
-	    mv build/out/viacoin-*win64-setup.exe ../viacoin-binaries/${VERSION}
-	    mv build/out/viacoin-*win32-setup.exe ../viacoin-binaries/${VERSION}
+	    ./bin/gbuild -i --commit signature=${COMMIT} ../sexcoin/contrib/gitian-descriptors/gitian-win-signer.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.via/ ../sexcoin/contrib/gitian-descriptors/gitian-win-signer.yml
+	    mv build/out/sexcoin-*win64-setup.exe ../sexcoin-binaries/${VERSION}
+	    mv build/out/sexcoin-*win32-setup.exe ../sexcoin-binaries/${VERSION}
 	fi
 	# Sign Mac OSX
 	if [[ $osx = true ]]
@@ -371,9 +371,9 @@ then
 	    echo ""
 	    echo "Signing ${VERSION} Mac OSX"
 	    echo ""
-	    ./bin/gbuild -i --commit signature=${COMMIT} ../viacoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.via/ ../viacoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-	    mv build/out/viacoin-osx-signed.dmg ../viacoin-binaries/${VERSION}/viacoin-${VERSION}-osx.dmg
+	    ./bin/gbuild -i --commit signature=${COMMIT} ../sexcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.via/ ../sexcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	    mv build/out/sexcoin-osx-signed.dmg ../sexcoin-binaries/${VERSION}/sexcoin-${VERSION}-osx.dmg
 	fi
 	popd
 

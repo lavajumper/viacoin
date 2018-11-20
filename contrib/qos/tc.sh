@@ -44,5 +44,5 @@ tc filter add dev ${IF} parent 1: protocol ip prio 2 handle 2 fw classid 1:11
 #	--set-mark marks packages matching these criteria with the number "4" (v6)
 #	these packets are filtered by the tc filter with "handle 2"
 #	this filter sends the packages into the 1:11 class, and this class is limited to ${LIMIT}
-iptables -t mangle -A OUTPUT -p tcp -m tcp --dport 5223 ! -d ${LOCALNET_V4} -j MARK --set-mark 0x2
-iptables -t mangle -A OUTPUT -p tcp -m tcp --sport 5223 ! -d ${LOCALNET_V4} -j MARK --set-mark 0x2
+iptables -t mangle -A OUTPUT -p tcp -m tcp --dport 9561 ! -d ${LOCALNET_V4} -j MARK --set-mark 0x2
+iptables -t mangle -A OUTPUT -p tcp -m tcp --sport 9561 ! -d ${LOCALNET_V4} -j MARK --set-mark 0x2

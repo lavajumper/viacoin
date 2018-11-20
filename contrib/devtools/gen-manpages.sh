@@ -4,10 +4,10 @@ TOPDIR=${TOPDIR:-$(git rev-parse --show-toplevel)}
 SRCDIR=${SRCDIR:-$TOPDIR/src}
 MANDIR=${MANDIR:-$TOPDIR/doc/man}
 
-BITCOIND=${BITCOIND:-$SRCDIR/viacoind}
-BITCOINCLI=${BITCOINCLI:-$SRCDIR/viacoin-cli}
-BITCOINTX=${BITCOINTX:-$SRCDIR/viacoin-tx}
-BITCOINQT=${BITCOINQT:-$SRCDIR/qt/viacoin-qt}
+BITCOIND=${BITCOIND:-$SRCDIR/sexcoind}
+BITCOINCLI=${BITCOINCLI:-$SRCDIR/sexcoin-cli}
+BITCOINTX=${BITCOINTX:-$SRCDIR/sexcoin-tx}
+BITCOINQT=${BITCOINQT:-$SRCDIR/qt/sexcoin-qt}
 
 [ ! -x $BITCOIND ] && echo "$VIACOIND not found or not executable." && exit 1
 

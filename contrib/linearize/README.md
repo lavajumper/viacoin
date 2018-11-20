@@ -1,5 +1,5 @@
 # Linearize
-Construct a linear, no-fork, best version of the Viacoin blockchain. The scripts
+Construct a linear, no-fork, best version of the Sexcoin blockchain. The scripts
 run using Python 3 but are compatible with Python 2.
 
 ## Step 1: Download hash list
@@ -39,7 +39,7 @@ will be printed.
 respectively, to the current time and to the timestamp of the most recent block
 written to the script's blockchain.
 * `genesis`: The hash of the genesis block in the blockchain.
-* `input`: viacoind blocks/ directory containing blkNNNNN.dat
+* `input`: sexcoind blocks/ directory containing blkNNNNN.dat
 * `hashlist`: text file containing list of block hashes created by
 linearize-hashes.py.
 * `max_out_sz`: Maximum size for files created by the `output_file` option.
